@@ -1,0 +1,199 @@
+---
+title: "Home submission -1"
+author: "Divya Reddy"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Dataset Introduction
+In this report, I have chosen two built-in R datasets: **ToothGrowth** and **ChickWeight**. 
+
+- *ToothGrowth* records the Effect of Vitamin C on Tooth Growth in Guinea Pigs.
+
+- *ChickWeight* records the growth of chicks over time under different diet regimens.  
+
+Both datasets include a mix of categorical and numerical variables, making them useful for exploratory data analysis.  
+
+```{r Load Datasets,message=FALSE}
+# dataset-1
+data(ToothGrowth)
+head(ToothGrowth)
+tail(ToothGrowth)
+str(ToothGrowth)
+summary(ToothGrowth)
+
+#dataset-2
+data(ChickWeight)
+head(ChickWeight)
+tail(ChickWeight)
+str(ChickWeight)
+summary(ChickWeight)
+```
+
+# Interpretation
+## ToothGrowth
+1. Variables:
+
+Numerical: len (tooth length), dose (Vitamin C dose).
+
+Categorical: supp (supplement type: VC or OJ).
+
+2. Range & Distribution:
+
+Tooth length (len) ranges from about 4.2 to 33.9.
+
+Most values lie between 13 and 26, but there are some smaller values (<10) which appear as low outliers.
+
+3. Patterns in Categorical Variables:
+
+supp is perfectly balanced (30 observations each for OJ and VC).
+
+dose has three levels (0.5, 1, 2 mg/day), with 20 observations per level → also balanced.
+
+4. Summary:
+
+The ToothGrowth dataset is well-balanced across supplement type and dose, making it a clean experimental dataset. Initial observations suggest that dose has a stronger effect on tooth length than supplement type, and a few low values may indicate experimental variability or mild outliers.
+
+## ChickWeight 
+1. Variables:
+
+Numerical: weight (chick weight in grams), Time (days since birth).
+
+Categorical: Chick (individual chick ID), Diet (four diet groups).
+
+2. Range & Distribution:
+
+Weight ranges from about 35 to 373 grams.
+
+Distribution is right-skewed: many chicks are lighter in early days, while a few reach much higher weights toward the end.
+
+Outliers exist at the higher end, representing rapidly growing chicks.
+
+Time runs from day 0 to day 21, evenly spaced.
+
+3. Patterns in Categorical Variables:
+
+Diet has four groups, each with 10–12 chicks (slightly imbalanced but reasonable).
+
+Chick IDs range from 1–50, with repeated measures over time → a longitudinal design.
+
+4. Summary:
+
+The ChickWeight dataset shows clear growth trends, with weight steadily increasing over time. While diets are not perfectly balanced, the dataset is large and provides rich information for exploring diet effects on growth patterns. Some extreme values reflect natural variation in growth rates rather than data errors.
+
+# Selection of Dataset
+ ChickWeight dataset consisting of 578 observations and 4 variables monitors the growth of 50 chicks on four diets over 21 days. It has two numeric variables - weight (chick weight in grams) and Time (days since birth) and two categorical variables - Diet (diet type) and Chick (identifier for individual chick). This dataset is an experiment in biological growth where the aim was to see how different diets impact the long-term growth of chicks. I chose this dataset because there is a dense mix of categorical and numeric variables, thus it is suitable for practicing descriptive statistics and visualization techniques. Its longitudinal format allows for consideration of both general growth trajectories as well as diet group contrasts,, offering more depth and analytical opportunities compared to simpler datasets.
+ 
+# One-Way Tables
+```{r One-Way Table,echo=TRUE}
+table(ChickWeight$Diet)
+prop.table(table(ChickWeight$Diet))
+pie(prop.table(table(ChickWeight$Diet)),
+    main = "Proportion of Chick Diets",
+    col = c("skyblue", "lightgreen", "orange", "pink"),
+    labels = paste("Diet", names(table(ChickWeight$Diet))))
+
+#Interpretation: In ChickWeight dataset, Diet 1 is the most common (38%), while Diets 2-4 are less represented (20%), showing the data is imbalanced across diets with Diet 1 dominating.
+```
+
+# Two-Way Tables
+```{r Two-Way Tables,echo=TRUE}
+cw_table <- table(ChickWeight$Diet, ChickWeight$Chick)
+cw_table
+prop.table(cw_table, margin=1)
+barplot(cw_table,
+        beside = FALSE,
+        col = c("skyblue","lightgreen","orange","pink"),
+        legend.text = rownames(cw_table),
+        main = "Diet × Chick (Stacked)",
+        xlab = "Chick ID", ylab = "Number of measurements",
+        las = 2, cex.names = 0.6)
+
+#Interpretation: In the ChickWeight dataset, each chick is assigned to one diet. Diet 1 has noticeably more chicks than the others, making the data slightly imbalanced across diets.
+```
+
+# Measures of Central Tendency
+```{r Measures of Central Tendency,echo=TRUE}
+mean(ChickWeight$weight)
+median(ChickWeight$weight)
+hist(ChickWeight$weight,
+     col = "lavender",
+     main = "Distribution of Chick Weights",
+     xlab = "Weight (grams)")
+# line graph
+avg_weight <- aggregate(weight ~ Time, data = ChickWeight, mean)
+plot(avg_weight$Time, avg_weight$weight, type = "l",
+     main = "Average Chick Growth Over Time",
+     xlab = "Time (days)",
+     ylab = "Average Weight (grams)",
+     col = "blue")
+
+#Interpretation:
+
+# The mean weight (122 g) is higher than the median weight (103 g), which shows the distribution is right-skewed.
+# Because of this skew, the median is a better measure of the typical chick weight, since it is less affected by the few very heavy chicks.
+# The distribution is not symmetrical: most chicks are lighter, while a smaller number reach much higher weights.
+# The line graph reveals a clear trend of steady growth over time, with chick weights increasing consistently as days progress.
+```
+
+# Measures of spread
+```{r Measures of spread,echo=TRUE}
+# Numeric variable: Time
+data <- ChickWeight$Time
+
+# Range
+range_val <- max(data) - min(data)
+print(paste("Range:", range_val))
+
+# IQR
+q1 <- quantile(data, 0.25)
+q3 <- quantile(data, 0.75)
+iqr_val <- q3 - q1
+print(paste("IQR:", iqr_val))
+
+# Variance and Standard deviation
+variance_val <- var(data)
+sd_val <- sd(data)
+print(paste("Variance:", variance_val))
+print(paste("Standard Deviation:", sd_val))
+
+#Boxplot
+boxplot(ChickWeight$Time,
+        main = "Boxplot of Chick Weighing Times",
+        ylab = "Time (days)",
+        col = "lightblue")
+
+# Interpretation: 
+
+# The data is evenly spread out across the 0–21 day range, reflecting the structured measurement schedule.
+# The spread indicates high consistency.
+# There are no outliers since time was recorded at fixed intervals.
+# This confirms the dataset has consistent measurement timing with a uniform spread across the study period.
+```
+
+# Percentiles
+```{r Percentiles,echo=TRUE}
+quantile(ChickWeight$weight, probs = c(0.25, 0.5, 0.75))
+
+boxplot(ChickWeight$weight,
+        main = "Boxplot of Chick Weights with Quantiles",
+        ylab = "Weight (grams)",
+        col = "maroon")
+# Interpretation:
+
+# Most observations fall between about 63 g (Q1) and 163 g (Q3), meaning the middle 50% of chick weights are in this range.
+# The wider upper quartile and outliers above 300 g show right-skewness, with a few chicks much heavier than the rest.
+```
+
+# Reflection
+- The most informative descriptive statistics were the median and IQR, since the data is right-skewed. They gave a clearer picture of the chick weight than the mean.
+
+- Visualizations such as the boxplot highlighted outliers, while the line graph revealed growth trends over time. The histogram also showed skewness in the weight distribution.
+
+- A key challenge was handling the longitudinal nature of the dataset (multiple measures per chick). I addressed this by focusing on summary statistics and visualization rather than advanced modeling.
+
+- Overall, combining categorical and numerical analysis provided a balanced understanding of chick growth across diets.
+
