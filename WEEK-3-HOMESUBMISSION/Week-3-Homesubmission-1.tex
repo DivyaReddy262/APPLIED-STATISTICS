@@ -1,0 +1,351 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Week-3 Homesubmission-1},
+  pdfauthor={Divya Reddy},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Week-3 Homesubmission-1}
+\author{Divya Reddy}
+\date{2025-09-17}
+
+\begin{document}
+\maketitle
+
+\subsection{Task-1}\label{task-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mu    }\OtherTok{\textless{}{-}} \FloatTok{26.4}
+\NormalTok{sigma }\OtherTok{\textless{}{-}} \FloatTok{5.8}
+
+\NormalTok{cutoff\_age }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(}\FloatTok{0.975}\NormalTok{, }\AttributeTok{mean =}\NormalTok{ mu, }\AttributeTok{sd =}\NormalTok{ sigma)}
+\NormalTok{cutoff\_age}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 37.76779
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Interpretation: 97.5\% of mothers are younger than or equal to 37.8 years at childbirth.Only 2.5\% are older than this age.}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Task-2}\label{task-2}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{proportion\_at\_least\_21 }\OtherTok{\textless{}{-}} \DecValTok{1} \SpecialCharTok{{-}} \FunctionTok{pnorm}\NormalTok{(}\DecValTok{21}\NormalTok{, }\AttributeTok{mean =}\NormalTok{ mu, }\AttributeTok{sd =}\NormalTok{ sigma)}
+\NormalTok{proportion\_at\_least\_21}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.8240821
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Interpretation:About 82.4\% of mothers are 21 years or older at childbirth.}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Task-3}\label{task-3}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ages }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{, }\FloatTok{26.4}\NormalTok{, }\DecValTok{35}\NormalTok{)}
+\NormalTok{z\_scores }\OtherTok{\textless{}{-}}\NormalTok{ (ages }\SpecialCharTok{{-}}\NormalTok{ mu) }\SpecialCharTok{/}\NormalTok{ sigma}
+\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{Age =}\NormalTok{ ages, }\AttributeTok{Z\_score =}\NormalTok{ z\_scores)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Age   Z_score
+## 1 18.0 -1.448276
+## 2 26.4  0.000000
+## 3 35.0  1.482759
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Interpretation: }
+
+\CommentTok{\#Age 18 is 1.45 SDs below average.}
+\CommentTok{\#Age 26.4 is exactly average.}
+\CommentTok{\#Age 35 is 1.48 SDs above average.}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Task-4}\label{task-4}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{age\_90th }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(}\FloatTok{0.90}\NormalTok{, }\AttributeTok{mean =}\NormalTok{ mu, }\AttributeTok{sd =}\NormalTok{ sigma)}
+\NormalTok{age\_90th}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 33.833
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Interpretation:About 10\% of mothers are older than 33.83 years, and 90\% are younger.}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Task-5}\label{task-5}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{age\_10th }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(}\FloatTok{0.10}\NormalTok{, }\AttributeTok{mean =}\NormalTok{ mu, }\AttributeTok{sd =}\NormalTok{ sigma)}
+\NormalTok{age\_90th }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(}\FloatTok{0.90}\NormalTok{, }\AttributeTok{mean =}\NormalTok{ mu, }\AttributeTok{sd =}\NormalTok{ sigma)}
+\FunctionTok{c}\NormalTok{(age\_10th, age\_90th)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 18.967 33.833
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Interpretation: The central 80\% of mothers are between 18.967 and 33.833 years old at childbirth.}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Task-6}\label{task-6}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p\_20 }\OtherTok{\textless{}{-}} \FunctionTok{pnorm}\NormalTok{(}\DecValTok{20}\NormalTok{, }\AttributeTok{mean =}\NormalTok{ mu, }\AttributeTok{sd =}\NormalTok{ sigma)}
+\NormalTok{p\_35 }\OtherTok{\textless{}{-}} \FunctionTok{pnorm}\NormalTok{(}\DecValTok{35}\NormalTok{, }\AttributeTok{mean =}\NormalTok{ mu, }\AttributeTok{sd =}\NormalTok{ sigma)}
+\NormalTok{proportion\_20\_35 }\OtherTok{\textless{}{-}}\NormalTok{ p\_35 }\SpecialCharTok{{-}}\NormalTok{ p\_20}
+\NormalTok{proportion\_20\_35}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.7960145
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Interpretation: About 79.6\% of mothers are between 20 and 35 years old at childbirth.}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Task-7}\label{task-7}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p\_teen }\OtherTok{\textless{}{-}} \FunctionTok{pnorm}\NormalTok{(}\DecValTok{20}\NormalTok{, }\AttributeTok{mean =}\NormalTok{ mu, }\AttributeTok{sd =}\NormalTok{ sigma)}
+\NormalTok{p\_teen}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.1349163
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Interpretation: The probability is 0.1349 (i.e 13.5\%). So, about 13–14 out of every 100 mothers are teenagers (\textless{} 20 years old).}
+
+\CommentTok{\# Implications: Clinics may need to plan extra prenatal support, educational programs, and counseling services for younger mothers, since teenage pregnancies can carry higher medical and social risks.}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Task-8}\label{task-8}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p\_adv\_age }\OtherTok{\textless{}{-}} \DecValTok{1} \SpecialCharTok{{-}} \FunctionTok{pnorm}\NormalTok{(}\DecValTok{35}\NormalTok{, }\AttributeTok{mean =}\NormalTok{ mu, }\AttributeTok{sd =}\NormalTok{ sigma)}
+\NormalTok{p\_adv\_age}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.06906928
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Interpretation: The fraction is 0.0691 (i.e 6.9\%). That means around 7 in 100 mothers are aged 35 or older.}
+
+\CommentTok{\# Implications: Healthcare providers should allocate specialized prenatal care and screenings for this group, as pregnancies at ≥35 carry higher risks and may require more intensive monitoring.}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Task-9}\label{task-9}
+
+A normal model for maternal age is reasonable as an approximation
+because the bulk of ages tend to cluster around the average with gradual
+variation, and it allows for straightforward probability calculations.
+
+\begin{itemize}
+\item
+  Limitation: It is not perfect, since ages cannot go below 0, and the
+  real data may be slightly skewed with more younger or older mothers
+  than the model predicts.
+\item
+  Usefulness: Even with this limitation, the normal model is still
+  helpful for quick estimates and planning, such as finding percentiles
+  or comparing age groups.
+\end{itemize}
+
+\subsection{Task-10}\label{task-10}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mu\_future    }\OtherTok{\textless{}{-}} \FloatTok{27.6}
+\NormalTok{sigma\_future }\OtherTok{\textless{}{-}} \FloatTok{5.3}
+
+\NormalTok{p\_adv\_future }\OtherTok{\textless{}{-}} \DecValTok{1} \SpecialCharTok{{-}} \FunctionTok{pnorm}\NormalTok{(}\DecValTok{35}\NormalTok{, }\AttributeTok{mean =}\NormalTok{ mu\_future, }\AttributeTok{sd =}\NormalTok{ sigma\_future)}
+\NormalTok{p\_adv\_future}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.08132316
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Interpretation: In the future cohort, about 8.1\% of mothers are aged 35 or older, compared with 6.9\% in the current cohort. This suggests that as the average age of mothers rises, the proportion classified as advanced maternal age also increases modestly, meaning healthcare services may need to plan for a gradual rise in demand for age{-}related prenatal care.}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Task-11}\label{task-11}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{sim\_ages}\OtherTok{\textless{}{-}}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{10000}\NormalTok{, }\AttributeTok{mean =} \FloatTok{26.4}\NormalTok{, }\AttributeTok{sd =} \FloatTok{5.8}\NormalTok{)}
+
+\FunctionTok{hist}\NormalTok{(sim\_ages,}
+     \AttributeTok{probability =} \ConstantTok{TRUE}\NormalTok{,}
+     \AttributeTok{col =} \StringTok{"lightblue"}\NormalTok{, }
+     \AttributeTok{main =} \StringTok{"Simulated Maternal Ages"}\NormalTok{,}
+     \AttributeTok{xlab =} \StringTok{"Age"}\NormalTok{,}
+     \AttributeTok{ylab=} \StringTok{"Density"}\NormalTok{)}
+
+\FunctionTok{lines}\NormalTok{(}\FunctionTok{density}\NormalTok{(sim\_ages), }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Week-3-Homesubmission-1_files/figure-latex/unnamed-chunk-10-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Interpretation: The histogram shows that most simulated ages are around 26–27 years, with most values between 15 and 40 years. The red density curve matches the bars well, showing that the data follow the expected normal distribution.}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}
