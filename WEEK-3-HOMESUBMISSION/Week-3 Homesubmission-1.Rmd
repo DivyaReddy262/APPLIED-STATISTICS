@@ -1,0 +1,138 @@
+---
+title: "Week-3 Homesubmission-1"
+author: "Divya Reddy"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Task-1
+
+```{r}
+mu    <- 26.4
+sigma <- 5.8
+
+cutoff_age <- qnorm(0.975, mean = mu, sd = sigma)
+cutoff_age
+
+#Interpretation: 97.5% of mothers are younger than or equal to 37.8 years at childbirth.Only 2.5% are older than this age.
+```
+## Task-2
+
+```{r}
+proportion_at_least_21 <- 1 - pnorm(21, mean = mu, sd = sigma)
+proportion_at_least_21
+
+# Interpretation:About 82.4% of mothers are 21 years or older at childbirth.
+```
+
+## Task-3
+
+```{r}
+ages <- c(18, 26.4, 35)
+z_scores <- (ages - mu) / sigma
+data.frame(Age = ages, Z_score = z_scores)
+
+# Interpretation: 
+
+#Age 18 is 1.45 SDs below average.
+#Age 26.4 is exactly average.
+#Age 35 is 1.48 SDs above average.
+```
+
+## Task-4
+
+```{r}
+age_90th <- qnorm(0.90, mean = mu, sd = sigma)
+age_90th
+
+# Interpretation:About 10% of mothers are older than 33.83 years, and 90% are younger.
+```
+
+## Task-5
+
+```{r}
+age_10th <- qnorm(0.10, mean = mu, sd = sigma)
+age_90th <- qnorm(0.90, mean = mu, sd = sigma)
+c(age_10th, age_90th)
+
+# Interpretation: The central 80% of mothers are between 18.967 and 33.833 years old at childbirth.
+```
+
+## Task-6
+
+```{r}
+p_20 <- pnorm(20, mean = mu, sd = sigma)
+p_35 <- pnorm(35, mean = mu, sd = sigma)
+proportion_20_35 <- p_35 - p_20
+proportion_20_35
+
+# Interpretation: About 79.6% of mothers are between 20 and 35 years old at childbirth.
+```
+
+## Task-7
+
+```{r}
+p_teen <- pnorm(20, mean = mu, sd = sigma)
+p_teen
+
+# Interpretation: The probability is 0.1349 (i.e 13.5%). So, about 13–14 out of every 100 mothers are teenagers (< 20 years old).
+
+# Implications: Clinics may need to plan extra prenatal support, educational programs, and counseling services for younger mothers, since teenage pregnancies can carry higher medical and social risks.
+```
+
+## Task-8
+
+```{r}
+p_adv_age <- 1 - pnorm(35, mean = mu, sd = sigma)
+p_adv_age
+
+# Interpretation: The fraction is 0.0691 (i.e 6.9%). That means around 7 in 100 mothers are aged 35 or older.
+
+# Implications: Healthcare providers should allocate specialized prenatal care and screenings for this group, as pregnancies at ≥35 carry higher risks and may require more intensive monitoring.
+```
+
+## Task-9
+
+A normal model for maternal age is reasonable as an approximation because the bulk of ages tend to cluster around the average with gradual variation, and it allows for straightforward probability calculations.
+
+- Limitation: It is not perfect, since ages cannot go below 0, and the real data may be slightly skewed with more younger or older mothers than the model predicts.
+
+- Usefulness: Even with this limitation, the normal model is still helpful for quick estimates and planning, such as finding percentiles or comparing age groups.
+
+## Task-10
+
+```{r}
+mu_future    <- 27.6
+sigma_future <- 5.3
+
+p_adv_future <- 1 - pnorm(35, mean = mu_future, sd = sigma_future)
+p_adv_future
+
+# Interpretation: In the future cohort, about 8.1% of mothers are aged 35 or older, compared with 6.9% in the current cohort. This suggests that as the average age of mothers rises, the proportion classified as advanced maternal age also increases modestly, meaning healthcare services may need to plan for a gradual rise in demand for age-related prenatal care.
+```
+
+## Task-11
+
+```{r}
+set.seed(123)
+sim_ages<-rnorm(10000, mean = 26.4, sd = 5.8)
+
+hist(sim_ages,
+     probability = TRUE,
+     col = "lightblue", 
+     main = "Simulated Maternal Ages",
+     xlab = "Age",
+     ylab= "Density")
+
+lines(density(sim_ages), col = "red", lwd = 2)
+
+# Interpretation: The histogram shows that most simulated ages are around 26–27 years, with most values between 15 and 40 years. The red density curve matches the bars well, showing that the data follow the expected normal distribution.
+```
+
