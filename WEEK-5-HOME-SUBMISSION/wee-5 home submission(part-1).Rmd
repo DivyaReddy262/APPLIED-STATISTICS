@@ -1,0 +1,69 @@
+---
+title: "Week 5 ( Home submission)"
+author: "Divya Reddy"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Part-1
+
+## Exercise-1 
+
+```{r}
+dpois(18, lambda = 20)
+
+# Interpretation: There is about an 8.4% chance that the hotline will receive exactly 18 calls tomorrow regarding flu symptoms.
+```
+
+## Exercise-2
+
+```{r}
+dpois(8, lambda = 5)
+
+# Interpretation: There is about a 6.5% chance that exactly 8 patients will arrive at the ER in the next hour. Since the average is 5 patients/hour, getting 8 patients is somewhat higher than expected, but not extremely unusual.
+```
+
+## Exercise-3
+
+```{r}
+ppois(35, lambda=40)
+
+# Interpretation: There is about a 24.2% chance that at most 35 people will enter the cafeteria in the next hour.
+```
+
+## Exercise-4 
+
+```{r}
+ppois(7, lambda = 5, lower.tail = FALSE)
+
+# Interpretation: There is about a 13.3% chance that 8 or more first aid requests will occur tomorrow.
+```
+
+## Exercise-5
+
+```{r}
+# Inclusive: 18 <= X <= 22
+ppois(22, lambda = 20) - ppois(17, lambda = 20)
+
+# Interpretation: There is about a 42.4% chance that the poison control center will receive between 18 and 22 calls tomorrow.
+```
+
+## Exercise-6
+
+```{r}
+## To get P(a ≤ X ≤ b), you subtract two CDF values:
+# pnorm(b, mean, sd) - pnorm(a, mean, sd) 
+# given mean= 80,sd= sqrt of variance so it is 12
+pnorm(100, mean = 80, sd = 12) - pnorm(90, mean = 80, sd = 12)
+
+# Interpretation: There is about a 15.45% probability that a randomly chosen man aged 35–44 from this population will have a diastolic blood pressure between 90 and 100 mmHg. Therefore, will be considered mild hypertensive.
+
+```
+
