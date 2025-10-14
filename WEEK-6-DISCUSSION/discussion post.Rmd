@@ -1,0 +1,43 @@
+---
+title: "Week -6 Discussion post"
+author: "Divya Reddy"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Paper-1
+
+
+## Real-life paper section:
+# - Find a research paper where confidence intervals are used to present findings. Use APA citations.
+
+Lininger, M. R., & Riemann, B. L. (2016). Statistical primer for athletic trainers: Using confidence intervals and effect sizes to evaluate clinical meaningfulness. Journal of Athletic Training, 51(12), 1045–1048. https://doi.org/10.4085/1062-6050-51.12.14.
+
+# - Analyze how well the confidence interval is explained in the report.
+In the paper the concept of the confidence interval (CI) is explained very clearly and effectively, especially for readers in clinical and applied health fields. The authors begin by defining a CI as a “range of values within which the population value is believed to lie at a given level of statistical confidence”. They go beyond the mathematical definition by emphasizing its practical importance helping clinicians understand not only whether a treatment effect exists but also how precise that estimate is. The explanation is strengthened through a practical example involving ankle dorsiflexion range of motion (ROM), which demonstrates how the CI can help determine whether an observed difference is likely to be clinically meaningful. The authors illustrate that a narrow CI (e.g. 5°–8°) indicates a more precise and useful estimate, while a wide CI (e.g.1°–15°) leads to uncertainty and limited decision-making value. They also discuss factors influencing CI width, such as sample size, variability, and confidence level, and caution that even a 95% CI does not guarantee every patient will experience the same result. Overall, the report explains confidence intervals in a thorough, logical, and clinically relevant manner, making a complex statistical concept accessible and meaningful for practitioners.
+
+# - How does the variability of the data impact the confidence interval?
+According to the paper, the variability of the data has a direct influence on the width of the confidence interval (CI). When there is greater variability in the sample data meaning that participants respond differently to the treatment—the CI becomes wider, indicating less precision in estimating the true population effect. This happens because inconsistent responses among individuals make it harder to determine the actual impact of the intervention. On the other hand, lower variability results in a narrower CI, providing a more precise and reliable estimate of the true effect. The authors state that “variability within the sample indicates that the treatment effect was not consistent among study participants, which can occur when inclusion or exclusion criteria are broad”. Therefore, reducing variability in a study helps produce narrower confidence intervals and allows clinicians to interpret results with greater confidence in their accuracy.
+
+# - What might happen if the confidence interval is too wide to provide meaningful insights?
+The variability of the data directly affects the width and precision of the confidence interval (CI). According to the paper, when there is greater variability among study participants meaning that individuals respond differently to the intervention the confidence interval becomes wider. This happens because inconsistent responses make it harder to estimate the true population effect with precision. In contrast, when data variability is low, meaning participants respond more uniformly, the CI becomes narrower and provides a more precise estimate of the treatment’s effect. The authors explain that variability within the sample indicates that the treatment effect was not consistent among study participants, which can occur when inclusion or exclusion criteria are broad. They note that wide intervals caused by high variability make it difficult for clinicians to be confident about the actual benefit of an intervention. Thus, minimizing variability through careful study design and participant selection leads to narrower, more useful confidence intervals for clinical decision-making.
+
+
+# Paper-2 
+
+# - Find a research paper where confidence intervals are used to present findings. Use APA citations.
+Wang, G., Li, W., Ourselin, S., & Vercauteren, T. (2020). Confidence intervals for performance estimates in brain MRI segmentation. Medical Image Analysis, 63, 101692. https://doi.org/10.48550/arXiv.2307.10926.
+
+# - Analyze how well the confidence interval is explained in the report.
+This paper provide an in-depth and technical explanation of confidence intervals (CIs) in the context of evaluating deep learning models for brain MRI segmentation. The authors emphasize that confidence intervals serve as a quantitative measure of uncertainty in model performance estimates, rather than relying solely on point statistics such as mean Dice scores or Hausdorff distances. The paper explains that a CI provides a range within which the true model performance is expected to fall with a given level of confidence, typically 95%. This approach allows researchers to assess model reliability and stability across multiple test datasets. The authors detail both frequentist and Bayesian frameworks for estimating confidence intervals. They use bootstrapping methods to derive CIs empirically, showing how resampling can estimate uncertainty from limited test data. The paper also illustrates the interpretation of CIs through examples, such as comparing overlapping confidence intervals between two segmentation models to determine if the performance difference is statistically significant. Overall, the report explains confidence intervals exceptionally well, linking statistical theory to practical applications in medical imaging and model comparison.
+
+# - How does the variability of the data impact the confidence interval?
+The authors clearly explain that the variability of data directly affects the width of confidence intervals. In brain MRI segmentation, this variability arises from multiple factors such as differences in MRI scanners, subject anatomy, image noise, and model generalization ability. Authors have noted that higher variability within the data results in wider confidence intervals, indicating greater uncertainty about the model’s true performance. Conversely, when variability is low such as in consistent datasets or stable algorithms the confidence intervals are narrower, meaning that the model’s estimated performance is more precise. The paper highlights this through comparisons between evaluation metrics: for instance, Hausdorff distance typically shows wider CIs due to being more sensitive to outliers, whereas the Dice coefficient produces narrower intervals because it is less affected by extreme segmentation errors. This discussion demonstrates that data variability is a fundamental factor determining how confident researchers can be in their reported performance. In summary, the paper shows that the more variable the data, the less precise the performance estimate becomes, which is reflected in the width of the CI.
+
+# - What might happen if the confidence interval is too wide to provide meaningful insights?
+According to the paper, a wide confidence interval indicates high uncertainty in the model’s performance estimate and can make it difficult to draw meaningful conclusions. When a CI is too wide, it implies that the model’s results vary significantly across samples, suggesting that its performance is unstable or unreliable. This uncertainty complicates fair comparisons between models, as two models may have overlapping confidence intervals even if their mean scores differ. The authors point out that relying solely on point estimates without considering CI width may lead to misleading interpretations, especially in clinical applications. A model might appear superior based on its average Dice score, but if the CI is very wide, that performance advantage may not hold consistently across all test cases. This has serious implications for medical deployment, where precision and reproducibility are critical. The paper emphasizes that wide CIs should prompt researchers to gather more data, refine model training, or improve evaluation methods to achieve narrower, more informative intervals. Thus, a wide CI not only reduces statistical confidence but also undermines the clinical trustworthiness and generalizability of AI-based segmentation systems.
