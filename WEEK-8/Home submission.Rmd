@@ -1,0 +1,650 @@
+---
+title: "Week-8 (Home submission-1)"
+author: "Divya Reddy"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exercise 1 - ER waiting times
+
+```{r}
+# Given values
+lower <- 128
+upper <- 147
+n <- 64
+conf_level <- 0.95
+
+# Step 1: Calculate sample mean
+mean_wait <- (lower + upper) / 2
+mean_wait
+
+# Step 2: Margin of Error
+ME <- (upper - lower) / 2
+ME
+
+# Step 3: z* value for 95% confidence
+z_star <- qnorm( (1 + conf_level) / 2 )
+z_star
+
+# Step 4: Standard Error
+SE <- ME / z_star
+SE
+
+# Step 5: Estimate sample standard deviation
+s <- SE * sqrt(n)
+s
+
+# CI from mean and SE
+lower_check <- mean_wait - z_star * SE
+upper_check <- mean_wait + z_star * SE
+c(lower_check, upper_check)
+
+```
+# Part - 1
+**1. This confidence interval is not valid since we do not know if the population distribution of the ER wait times is nearly Normal.**
+
+Ans: False 
+
+- The confidence interval is valid because the sample size is large (\(n = 64\)).  
+- By the Central Limit Theorem, the sampling distribution of the sample mean is approximately normal even if the population distribution is not.  
+- Therefore, the normal model used to construct the interval is appropriate. 
+
+**2. We are 95% confident that the average waiting time of these 64 emergency room patients is between 128 and 147 minutes.**
+
+Ans: False
+
+- The confidence interval provides information about the population mean, not just the 64 patients in the sample.  
+- We are 95% confident that the true average ER waiting time for the entire population of patients lies between 128 and 147 minutes, not just for those in the sample.
+
+**3. We are 95% confident that the average waiting time of all patients at this hospital’s emergency room is between 128 and 147 minutes.**
+
+Ans: True
+
+- A 95% confidence interval is used to estimate the population mean.  
+- This means we are 95% confident that the true average waiting time for all patients at this hospital’s emergency room lies between 128 and 147 minutes.
+
+**4. 95% of random samples have a sample mean between 128 and 147 minutes.**
+
+Ans: False
+
+- The interval (128, 147) was calculated from this specific sample.  
+- 95% confidence means that 95% of such intervals constructed from many random samples will contain the true population mean — not that 95% of sample means fall within this particular interval.
+
+**5. A 99% confidence interval would be narrower than the 95% confidence interval since we need to be more sure of our estimate.**
+
+Ans: False
+
+- A 99% confidence interval would actually be wider, not narrower.  
+- Increasing the confidence level requires a larger margin of error to be more certain that the interval captures the true population mean. 
+
+**6. The margin of error is 9.5 and the sample mean is 137.5.**
+
+Ans:True
+
+- The margin of error is calculated as half the width of the confidence interval:  
+\((147 - 128) / 2 = 9.5\) minutes.  
+- The sample mean is the midpoint of the interval:  
+\((147 + 128) / 2 = 137.5\) minutes.
+
+
+# Part - 2
+**1. A local newspaper claims that the average waiting time at this ER exceeds 3 hours. Is this claim supported by the confidence interval? Explain your reasoning.**
+
+Ans: The newspaper claims that the average waiting time exceeds 3 hours (180 minutes). Since 180 minutes is outside the 95% confidence interval of (128, 147) minutes, this claim is not supported by the data. The interval suggests the true mean waiting time is likely lower than 180 minutes.
+
+**2. The Dean of Medicine at this hospital claims the average wait time is 2.2 hours. Is this claim supported by the confidence interval? Explain your reasoning.**
+
+Ans: The Dean claims the average wait time is 2.2 hours (132 minutes). 132 minutes falls within the 95% confidence interval of (128, 147) minutes, so this claim is supported by the data.
+
+**3.Without actually calculating the interval, determine if the claim of the Dean would be supported based on a 99% confidence interval?**
+
+Ans: A 99% confidence interval would be wider than the 95% interval to reflect greater certainty. Since 132 minutes is already inside the 95% interval, it would also be inside the wider 99% interval. Therefore, the Dean’s claim would still be supported with a 99% confidence interval.
+
+# Exercise 2 - Testing Mean Plant Weight
+```{r}
+# Load the built-in dataset
+data(PlantGrowth)
+
+# Extract control group weights
+control <- subset(PlantGrowth, group == "ctrl")$weight
+
+# View the control group weights
+control
+
+```
+
+**Task 1: Formulate Hypotheses**
+
+Ans: H0: The true mean plant weight in the control group is equal to 5 grams.
+
+Ha: The true mean plant weight in the control group is not equal to 5 grams. 
+
+Context: 
+
+- The null hypothesis states that the average dry weight of plants in the control group is 5 grams, meaning there is no difference from the expected or benchmark weight.  
+
+- The alternative hypothesis states that the true average weight is different from 5 grams, indicating a possible deviation in plant growth under control conditions.
+
+**Task 2: Explore the Data**
+
+Ans: The sample mean of the control group is 5.032 grams. Based on the distribution of the control group weights, the data appear approximately symmetric with no extreme outliers. This suggests that the normality assumption for the t-test is reasonable.
+
+**Task 3: Check Assumptions for the t-Test**
+
+1. Independence: Yes, independence is a reasonable assumption here. Each observation is the weight of a different plant in the control group, with one measurement per plant and no pairing. If plants were grown and handled under the same conditions without interfering with each other, and were randomly assigned/harvested, then one plant’s weight does not affect another’s.  
+
+2. Normality:
+```{r}
+shapiro.test(control)
+
+# Histogram and density plot
+hist(control, 
+     main = "Histogram of Control Group Weights",
+     xlab = "Plant Weight (grams)",
+     col = "lightblue",
+     border = "black")
+
+```
+Ans: Answer:  
+
+- The Shapiro–Wilk test gave a p-value of 0.7475, which is greater than 0.05.
+
+- We fail to reject the null hypothesis and conclude that the control group’s plant weights are approximately normally distributed.
+
+- The histogram shows a roughly symmetric distribution centered around 5 grams with no extreme skewness or outliers.  
+- This visual check supports the normality assumption required for the t-test.
+
+**Task 4: Conduct the One-Sample t-Test**
+```{r}
+
+# one- sample t-test
+t.test(control, mu = 5)
+```
+- There is no statistically significant evidence that the mean plant weight in the control group differs from 5 grams.
+
+**Task 5: Interpret the Results**
+
+Ans: 
+
+- The p-value is 0.8661. This large p-value indicates that there is no strong evidence against the null hypothesis.  
+
+- At the 5% significance level, we fail to reject null hypothesis. 
+
+- This result implies that the control group’s mean plant weight does not differ significantly from 5 grams. The observed sample mean (5.032 g) is very close to the hypothesized mean, and the 95% confidence interval includes 5 grams.
+
+**Task 6: Compare Treatments**
+```{r}
+# Load dataset
+data(PlantGrowth)
+
+# Extract groups
+ctrl <- subset(PlantGrowth, group == "ctrl")$weight
+trt1 <- subset(PlantGrowth, group == "trt1")$weight
+trt2 <- subset(PlantGrowth, group == "trt2")$weight
+
+# Two-sample t-tests
+t_test_ctrl_trt1 <- t.test(ctrl, trt1, var.equal = TRUE)
+t_test_ctrl_trt2 <- t.test(ctrl, trt2, var.equal = TRUE)
+
+# Print results
+t_test_ctrl_trt1
+t_test_ctrl_trt2
+
+```
+Ans:
+Hypotheses for each comparison:  
+
+- H0: The true mean plant weight is the same between the two groups.  
+
+- Ha: The true mean plant weight is different between the two groups.
+
+
+# Exercise 3 - Comparing Sepal Lengths Between Two Iris Species
+```{r}
+# Load the built-in iris dataset
+data(iris)
+
+# Create numeric vectors for sepal length of each species
+setosa <- subset(iris, Species == "setosa")$Sepal.Length
+versicolor <- subset(iris, Species == "versicolor")$Sepal.Length
+
+# View the first few values
+head(setosa)
+head(versicolor)
+
+```
+
+**Task 1: Formulate Hypotheses**
+```{r}
+# Perform two-sample t-test
+t_test_result <- t.test(setosa, versicolor, var.equal = TRUE)
+t_test_result
+```
+Ans:
+
+- The null hypothesis states that the mean sepal length of Iris setosa is equal to the mean sepal length of Iris versicolor.  
+
+- The alternative hypothesis states that the mean sepal length of Iris setosa is not equal to the mean sepal length of Iris versicolor.
+
+Context: we are testing whether there is a statistically significant difference in the average sepal length between the two flower species.  
+- Based on the t-test results, the p-value is less than 0.05, so we reject the null hypothesis.  
+- This indicates that the average sepal lengths of setosa and versicolor are significantly different, with versicolor having a larger mean sepal length.
+
+**Task 2: Explore the Data**
+```{r}
+# Summary statistics
+summary(setosa)
+summary(versicolor)
+
+species <- factor(c(rep("setosa", length(setosa)), rep("versicolor", length(versicolor))))
+sepal_length <- c(setosa, versicolor)
+
+# Box plot
+boxplot(sepal_length ~ species,
+        main = "Boxplot of Sepal Length by Species",
+        xlab = "Species",
+        ylab = "Sepal Length (cm)",
+        col = c("pink", "lavender"))
+```
+Ans: Iris versicolor appears to have longer sepals on average compared to Iris setosa.  
+
+**Task 3: Check Assumptions for the t-Test**
+1. Indipendence:
+Ans:
+- Yes, each flower measurement can be considered independent.  
+
+- The iris dataset contains measurements from different individual flowers, and one flower’s sepal length does not influence another’s.  
+
+- This satisfies the independence assumption required for the two-sample t-test.
+
+2. Normality:
+```{r}
+shapiro.test(setosa)
+shapiro.test(versicolor)
+
+# Histogram for Setosa
+hist(setosa,
+     main = "Histogram of Sepal Length (Setosa)",
+     xlab = "Sepal Length (cm)",
+     col = "lightblue",
+     border = "black")
+
+# Histogram for Versicolor
+hist(versicolor,
+     main = "Histogram of Sepal Length (Versicolor)",
+     xlab = "Sepal Length (cm)",
+     col = "lightgreen",
+     border = "black")
+```
+
+Ans: Since both p-values are greater than 0.05, we fail to reject the null hypothesis.This means the data for both Setosa and Versicolor are approximately normally distributed.
+
+**3. Equal Variances**
+```{r}
+# Perform F-test for equal variances
+var.test(setosa, versicolor)
+
+```
+Interpretation: There is strong evidence that the variances of Sepal Length between Setosa and Versicolor are significantly different. This means the equal variance assumption is violated.
+
+**Task 4: Conduct the Two-Sample t-Test**
+```{r}
+# Two-sample t-test
+t_test_result <- t.test(setosa, versicolor, var.equal = FALSE)
+t_test_result
+
+```
+
+**Task 5: Interpret the Results**
+
+1. What is the p-value, and what does it tell you?
+Ans: The p-value is < 2.2e-16, which is much smaller than 0.05. This indicates that the observed difference in sepal lengths between Iris setosa and Iris versicolor is highly statistically significant, and it is extremely unlikely that this difference is due to random chance.
+
+2. At the 5% significance level, do you reject or fail to reject H₀?
+Ans: Since the p-value is less than 0.05, we reject the null hypothesis. This means there is sufficient evidence to conclude that the mean sepal lengths of the two species are not equal.
+
+3.What does this mean about the difference in average sepal lengths between Iris setosa and Iris versicolor?
+Ans: This means that there is a significant difference in the average sepal lengths between Iris setosa and Iris versicolor.Iris versicolor generally has longer sepals than Iris setosa.
+
+**Task 6: Additional Comparison**
+```{r}
+# Extract sepal length for both species
+versicolor <- subset(iris, Species == "versicolor")$Sepal.Length
+virginica <- subset(iris, Species == "virginica")$Sepal.Length
+
+# Two-sample t-test
+t_test_versicolor_virginica <- t.test(versicolor, virginica)
+t_test_versicolor_virginica
+
+```
+
+Ans: 
+
+- There is a significant difference between the mean sepal lengths of Iris versicolor and Iris virginica.
+
+- Iris virginica has a larger average sepal length (6.588 cm) compared to Iris versicolor (5.936 cm).
+
+# Exercise 4 - Comparing Tooth Growth
+
+```{r}
+# Load the dataset
+data(ToothGrowth)
+
+# Create subsets for each supplement type
+OJ <- subset(ToothGrowth, supp == "OJ")$len
+VC <- subset(ToothGrowth, supp == "VC")$len
+
+# One-sided t-test (OJ > VC)
+t_test_OJ_VC <- t.test(OJ, VC, alternative = "greater")
+t_test_OJ_VC
+```
+
+**Task 1: Formulate Hypotheses**
+Ans: Since the p-value (0.03032) < 0.05, we reject the null hypothesis. This means guinea pigs given orange juice had significantly greater tooth growth than those given vitamin C.
+
+**Task 2: Explore the Data**
+
+```{r}
+# Load required packages
+library(ggplot2)
+
+# Load the ToothGrowth dataset
+data(ToothGrowth)
+
+# Summary statistics
+summary(ToothGrowth$len)
+tapply(ToothGrowth$len, ToothGrowth$supp, summary)
+aggregate(len ~ supp, ToothGrowth, mean)
+
+# Visualization - Boxplot with ggplot2
+ggplot(ToothGrowth, aes(x = supp, y = len, fill = supp)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "Tooth Length by Supplement Type",
+       x = "Supplement Type",
+       y = "Tooth Length (microns)") +
+  scale_fill_manual(values = c("OJ" = "orange", "VC" = "skyblue")) +
+  theme_minimal()
+
+```
+
+
+Ans: The boxplot shows that the OJ group has a higher median and generally longer teeth compared to the VC group. This suggests that OJ tends to produce greater tooth growth than VC in guinea pigs.
+
+**Task 3: Check Assumptions for the t-Test**
+
+1. Independence: 
+
+- Yes, the observations are independent.
+
+- Each guinea pig was measured once, and the tooth length of one guinea pig does not influence the tooth length of another.
+
+- Therefore, the independence assumption required for the t-test is satisfied.
+
+2. Normality:
+```{r}
+# Shapiro-Wilk normality test for each group
+shapiro.test(OJ)
+shapiro.test(VC)
+
+hist(OJ,
+     main = "Histogram of Tooth Length (OJ)",
+     xlab = "Tooth Length (μm)",
+     col = "orange",
+     border = "white")
+
+hist(VC,
+     main = "Histogram of Tooth Length (VC)",
+     xlab = "Tooth Length (μm)",
+     col = "skyblue",
+     border = "white")
+```
+
+Ans: Since both groups have moderate and equal sample sizes (n = 30), the t-test is robust to this slight violation.However, it is good practice to confirm the result with a Wilcoxon rank-sum test as a non-parametric check.
+
+**Task 4: Conduct the Right-Tailed Two-Sample t-Test**
+```{r}
+# Right-tailed two-sample t-test
+t_test_OJ_VC <- t.test(OJ, VC, alternative = "greater")
+t_test_OJ_VC
+
+```
+
+Ans: There is statistically significant evidence that orange juice (OJ) results in greater tooth growth compared to ascorbic acid (VC) in guinea pigs.
+
+**Task 5: Interpret the Results**
+
+1. What is the p-value, and what does it tell you?
+
+Ans: The p-value = 0.03032. This indicates there is a 3.03% chance of observing a difference this large (or larger) between the means of OJ and VC if the null hypothesis were true. Since the p-value is below 0.05, it provides evidence against the null hypothesis.
+
+2. At the 5% significance level, do you reject or fail to reject H₀?
+
+Ans: Because p < 0.05, we reject the null hypothesis (H₀). This means we conclude there is a significant difference between the groups.
+
+3.What does this result mean about the effect of orange juice on tooth growth compared to vitamin C?
+
+Ans: The mean tooth length for OJ (20.66) is significantly higher than VC (16.96). This suggests that orange juice leads to greater tooth growth than pure vitamin C at the same dose levels.The statistical evidence supports the claim that OJ has a stronger effect on tooth growth in guinea pigs.
+
+**Task 6: Visualize the Mean Difference**
+```{r}
+# Load required package
+library(ggplot2)
+
+# Calculate mean tooth lengths for each supplement type
+mean_data <- aggregate(len ~ supp, data = ToothGrowth, mean)
+
+# Create bar plot
+ggplot(mean_data, aes(x = supp, y = len, fill = supp)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.8) +
+  geom_text(aes(label = round(len, 2)), vjust = -0.5, size = 4) +
+  labs(title = "Mean Tooth Length by Supplement Type",
+       x = "Supplement Type",
+       y = "Mean Tooth Length (microns)") +
+  scale_fill_manual(values = c("OJ" = "orange", "VC" = "skyblue")) +
+  theme_minimal()
+
+```
+
+Interpretation:
+
+- The bar plot shows that the mean tooth length for the OJ group is 20.66 microns, whereas for the VC group, it is 16.96 microns.
+
+- This difference of about 3.7 microns visually confirms the statistical results obtained from the t-test.
+
+- The OJ bar is clearly higher than the VC bar, indicating that orange juice produced greater tooth growth in guinea pigs.
+
+- This visual evidence supports the rejection of the null hypothesis, reinforcing that OJ has a significantly stronger effect on tooth growth compared to pure vitamin C.
+
+# Exercise 5 - Comparing the Effects of Two Drugs on Sleep
+```{r}
+# Load the dataset
+data(sleep)
+
+# Extract Drug 1 and Drug 2 sleep improvements
+drug1 <- subset(sleep, group == 1)$extra
+drug2 <- subset(sleep, group == 2)$extra
+
+# Run a paired t-test (right-tailed)
+t.test(drug2, drug1, 
+       alternative = "greater",  
+       paired = TRUE)    
+```
+
+Ans: In the context of sleep improvement, the hypotheses mean that we are testing whether Drug 2 leads to a greater increase in sleep duration compared to Drug 1. The null hypothesis assumes no difference or less improvement with Drug 2, while the alternative hypothesis suggests that Drug 2 provides more additional sleep hours than Drug 1 for the same individuals.
+
+**Task 2: Explore the Data**
+```{r}
+# Load the dataset
+data(sleep)
+
+# Basic summary statistics
+summary(sleep$extra)                         
+tapply(sleep$extra, sleep$group, summary)    
+
+# Calculate mean for each drug
+aggregate(extra ~ group, sleep, mean)
+
+# Boxplot to visualize the difference between Drug 1 and Drug 2
+library(ggplot2)
+ggplot(sleep, aes(x = factor(group), y = extra, fill = factor(group))) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "Increase in Sleep by Drug Type",
+       x = "Drug",
+       y = "Increase in Sleep (hours)") +
+  scale_fill_manual(values = c("orange", "skyblue"),
+                    labels = c("Drug 1", "Drug 2")) +
+  theme_minimal()
+
+```
+
+Interpretation: The boxplot shows that Drug 2 has a higher median and a wider range of increased sleep hours compared to Drug 1. Most values for Drug 2 are above those for Drug 1, indicating that participants generally experienced more additional sleep after taking Drug 2. This visual pattern supports the earlier statistical results, suggesting that Drug 2 is more effective in increasing sleep duration than Drug 1.
+
+**Task 3: Check Assumptions for the Paired t-Test**
+
+1. Paired Observations:
+
+Ans: In this study, each subject received both Drug 1 and Drug 2, meaning that the two measurements (sleep increase) are taken from the same individual under different conditions.
+Because the same subjects are used for both treatments, the observations are naturally paired. This pairing controls for individual differences (e.g., baseline sleep levels), making the paired t-test the correct statistical method to use here.
+
+2. Normality of Differences:
+```{r}
+# Load the dataset
+data(sleep)
+
+# Create separate vectors for Drug 1 and Drug 2
+drug1 <- subset(sleep, group == 1)$extra
+drug2 <- subset(sleep, group == 2)$extra
+
+# Create the difference vector
+diff <- drug2 - drug1
+
+# Shapiro-Wilk test for normality
+shapiro.test(diff)
+
+# Histogram of differences
+hist(diff,
+     main = "Histogram of Sleep Differences (Drug2 - Drug1)",
+     xlab = "Difference in Extra Sleep (hours)",
+     col = "lightblue",
+     border = "black")
+
+# Q-Q plot to visualize normality
+qqnorm(diff,
+       main = "Q–Q Plot of Differences")
+qqline(diff, col = "red", lwd = 2)
+
+```
+
+Interpretation: 
+
+- Shapiro–Wilk Test: p-value = 0.03334 (below 0.05), so we reject the null hypothesis of normality.This indicates that the differences between Drug 2 and Drug 1 are not perfectly normally distributed.
+
+- Histogram: The distribution is positively skewed (a longer tail on the right), with more values clustered between 0 and 2 hours. This supports the Shapiro–Wilk test result that normality is violated.
+
+- Q–Q Plot: The points deviate from the red reference line, especially at the upper end, indicating departure from normality.
+
+**Task 4: Conduct the Paired Hypothesis Test**
+```{r}
+wilcox.test(drug2, drug1, paired = TRUE, alternative = "greater")
+```
+
+Interpretation: The Wilcoxon signed-rank test yielded a p-value of 0.0045, which is less than 0.05, indicating a statistically significant difference between Drug 2 and Drug 1. This means we reject the null hypothesis.
+
+**Task 5: Interpret the Results**
+
+- P-value: The p-value is 0.0045. This is the probability of observing a difference as extreme as (or more extreme than) the one found, assuming that there is no true difference between Drug 1 and Drug 2.
+
+- Decision at 5% significance level: Since 0.0045 < 0.05, we reject the null hypothesis (H₀).
+
+- This result provides strong evidence that Drug 2 leads to a greater increase in sleep duration compared to Drug 1. In other words, Drug 2 is significantly more effective in improving sleep.
+
+**Task 6: Visualize the Mean Difference**
+```{r}
+data(sleep)
+
+# Task 6: Visualize the Mean Difference
+sleep_wide <- reshape(sleep, timevar = "group", idvar = "ID", direction = "wide")
+drug1 <- sleep_wide$extra.1
+drug2 <- sleep_wide$extra.2
+
+mean_values <- data.frame(
+  Drug = c("Drug 1", "Drug 2"),
+  Mean_Sleep = c(mean(drug1), mean(drug2))
+)
+
+library(ggplot2)
+ggplot(mean_values, aes(x = Drug, y = Mean_Sleep, fill = Drug)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_text(aes(label = round(Mean_Sleep, 2)), vjust = -0.5) +
+  labs(title = "Mean Increase in Sleep by Drug",
+       x = "Drug",
+       y = "Mean Increase in Sleep (hours)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+
+Interpretation: The bar plot shows that the mean increase in sleep is higher for Drug 2 compared to Drug 1.
+This visual finding aligns with the Wilcoxon signed-rank test, where we rejected the null hypothesis and concluded that Drug 2 significantly improves sleep duration more than Drug 1.
+
+# Exercise 6 - Proportion of Manual-transmission Cars
+
+```{r}
+# Load data
+data(mtcars)
+
+# Define successes (manual) and sample size
+x <- sum(mtcars$am == 1)  # number of manual cars
+n <- nrow(mtcars)         # total cars
+
+x
+n
+```
+
+**Task 1: Formulate Hypotheses**
+The null hypothesis states that 50% of cars are manual, while the alternative hypothesis states that the proportion of manual cars is not 50%, meaning the actual proportion differs from the manufacturer’s claim.
+
+**Task 2: Explore the Data**
+```{r}
+# Display sample proportion and counts
+prop <- x / n
+table(mtcars$am)
+prop
+
+# Create a simple bar plot of counts
+barplot(table(mtcars$am),
+        names.arg = c("Automatic", "Manual"),
+        col = c("skyblue", "orange"),
+        main = "Number of Cars by Transmission Type",
+        ylab = "Count")
+```
+
+Ans: The sample proportion of manual cars (0.406) is lower than the claimed 0.50, and the bar plot shows fewer manual cars than automatic, suggesting the data is not fully consistent with the claim.
+
+**Task 3: Check Conditions and Assumptions**
+
+- The observations are independent, and the sample size is large enough to meet the normal approximation criteria.
+
+- Therefore, the conditions for a single-sample proportion test are satisfied.
+
+**Task 4: Conduct the One-Sample Proportion Test**
+```{r}
+# One-sample proportion test (two-sided)
+prop.test(x, n, p = 0.5, alternative = "two.sided", correct = FALSE)
+
+```
+
+**Task 5: Interpret the Results**
+
+- We used a one-sample proportion test, and the p-value was 0.2888.
+
+- At the 5% significance level, we fail to reject the null hypothesis, meaning there is no significant evidence that the proportion of manual cars differs from 0.50.
+
+- The 95% confidence interval (0.256 to 0.578) includes 0.50, supporting the manufacturer’s claim.
+
