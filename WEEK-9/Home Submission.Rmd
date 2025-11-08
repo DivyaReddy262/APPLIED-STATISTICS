@@ -1,0 +1,181 @@
+---
+title: "Week-9 (Home submission)"
+author: "Divya Reddy"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Part 1: Understanding ANOVA Assumptions
+Before running ANOVA, we must check three main assumptions to make sure the results are valid and meaningful.
+
+**1. Independence of Observations**
+
+Each observation must be collected independently, meaning one participant’s result should not affect another’s. In the vaccine study, each person’s antibody level should be recorded separately. If data are related or repeated from the same subject, ANOVA results can become biased. Independence is usually ensured through proper random sampling and random assignment.\
+
+**2. Normality of Residuals**
+
+The differences between observed and predicted values should be roughly normally distributed within each group. For the vaccine data, antibody levels in each Vaccine * Age Group should follow a normal pattern. Mild non-normality is acceptable, but extreme skewness or outliers can affect the F-test results. Normality can later be checked using a histogram, Q-Q plot, or Shapiro-Wilk test.
+
+**3. Homogeneity of Variances**
+
+The spread of values (variance) in each group should be about the same. For example, the antibody level variation among different vaccines and age groups should be similar. If group variances differ too much, ANOVA may give misleading results. This can be tested using Levene’s test.
+
+**If ANOVA Assumptions Are Violated**
+
+When the assumptions of ANOVA are not satisfied, corrections are necessary to maintain the accuracy of results. If the normality assumption is violated, the data can be transformed (for example, using a log or square-root transformation) to make the distribution more normal, or a non-parametric test such as the Kruskal-Wallis test can be used. If variances are unequal, Welch’s ANOVA is recommended since it adjusts the degrees of freedom for heterogeneity. When the independence assumption is violated, the study design or analysis method should be changed, such as using repeated-measures ANOVA or mixed-effects models. Ignoring these issues can make results unreliable and may lead to incorrect conclusions about group differences (Glass et al., 1972; Lix et al., 1996).
+
+References: 
+
+- Glass, G. V., Peckham, P. D., & Sanders, J. R. (1972). Consequences of failure to meet assumptions underlying the fixed effects analyses of variance and covariance. Review of Educational Research, 42(3), 237–288. https://doi.org/10.3102/00346543042003237.
+
+- Lix, L. M., Keselman, J. C., & Keselman, H. J. (1996). Consequences of assumption violations revisited: A quantitative review of alternatives to the one-way analysis of variance F test. Review of Educational Research, 66(4), 579–619. https://doi.org/10.3102/00346543066004579.
+
+# Part 2: Testing the Assumptions in R
+
+1. Independence of Observations
+
+```{r}
+# Load required libraries
+library(tidyverse)
+library(car)        # for Levene's Test
+library(ggpubr)     # for visualization
+library(rstatix)    # for Shapiro-Wilk & ANOVA helpers
+
+# Load dataset
+vaccine <- read.csv("vaccine.csv")
+
+# Remove unnecessary index column if present
+vaccine <- vaccine[, -1]
+
+str(vaccine)
+summary(vaccine)
+
+# Interpretation:
+
+#The independence assumption cannot be tested directly in R. However, in this vaccine study, each participant’s antibody response was measured individually, and participants were randomly assigned to receive either Vaccine A or Vaccine B. Since no participant contributes data to more than one group, it is reasonable to assume that observations are independent.
+```
+
+2. Normality of Residuals
+
+```{r}
+# Fit the two-way ANOVA model
+model <- aov(Antibody_Titer ~ Vaccine_Type * Age_Group, data = vaccine)
+
+# Extract residuals
+res <- residuals(model)
+
+# Shapiro-Wilk test for normality
+shapiro.test(res)
+
+# QQ plot for visual check
+qqnorm(res)
+qqline(res, col = "red")
+
+# Histogram of residuals
+hist(res, main = "Histogram of Residuals", xlab = "Residuals", col = "lightblue", border = "white")
+
+
+# Interpretation: 
+
+# The Shapiro-Wilk test was used to examine whether the residuals from the ANOVA model were normally distributed.
+# The test produced W = 0.966 and a p-value = 0.2701, which is greater than 0.05.
+# This means there is no significant deviation from normality, so the normality assumption is satisfied.
+# The Q–Q plot shows that most residual points lie close to the red reference line, with only slight deviations at the tails.
+# Similarly, the histogram of residuals appears approximately bell-shaped and symmetric.
+# Together, these results suggest that the residuals are reasonably normal.
+# Therefore, the normality assumption for ANOVA is met, and no data transformation is required.
+```
+
+3. Homogeneity of Variances
+
+```{r}
+library(car)
+
+# Levene's Test for equality of variances
+leveneTest(Antibody_Titer ~ Vaccine_Type * Age_Group, data = vaccine)
+
+# Interpretation:
+
+#Levene’s Test was conducted to check whether the variances of antibody titers are equal across the combinations of vaccine type and age group.
+# The test produced an F value of 1.3466 with a p-value = 0.2746, which is greater than 0.05.
+# This indicates no significant difference in group variances, meaning the spread of antibody titers is consistent across all groups.
+# Therefore, the homogeneity of variances assumption is satisfied.
+# This suggests that the variability within each vaccine and age group is comparable, making the dataset appropriate for conducting a two-way ANOVA without further corrections or transformations.
+```
+
+# Part 3: Performing the Two-Way ANOVA
+
+```{r}
+# Fit the two-way ANOVA model
+anova_model <- aov(Antibody_Titer ~ Vaccine_Type * Age_Group, data = vaccine)
+
+# View ANOVA summary table
+summary(anova_model)
+
+```
+
+Then answer the following:
+
+- **Is there a significant main effect of Vaccine_Type?**
+
+Ans: No, there is no significant main effect of Vaccine_Type on antibody titer levels.
+
+Explanation:
+The p-value (0.145) is greater than 0.05, meaning we fail to reject the null hypothesis.
+This indicates that the difference in mean antibody titers between the vaccines (Vaccine_A and Vaccine_B) is not statistically significant.
+In other words, both vaccines produced similar immune responses in participants.
+
+- **Is there a significant main effect of Age_Group?**
+
+Ans: No, there is no significant main effect of Age_Group on antibody titer levels.
+
+Explanation:
+The p-value (0.610) is much greater than 0.05, so we fail to reject the null hypothesis.
+This means that the mean antibody titers do not differ significantly between the Young and Elderly groups.
+In simple terms, age does not appear to have a measurable effect on the immune response in this dataset.
+
+- **Is there a significant interaction effect between Vaccine_Type and Age_Group?**
+
+Ans:No, there is no significant interaction effect between Vaccine_Type and Age_Group on antibody titers.
+
+Explanation:
+The p-value (0.561) is greater than 0.05, meaning we fail to reject the null hypothesis for the interaction term.
+This suggests that the effect of vaccine type on antibody levels is consistent across both age groups.
+In other words, the difference between vaccines does not depend on age, and vice versa.
+
+- Hence, both vaccine types perform similarly in young and elderly participants, with no evidence of an interaction effect.
+
+# Part 4: Discussion 
+
+Summarize your findings:
+
+- **Which factors significantly influenced the immune response?**
+
+Ans: This study looked at how vaccine type and age group affect the body’s immune response, measured by antibody levels. After checking that all ANOVA assumptions were met, the results showed that there was no significant difference in antibody levels between the two vaccines or between the different age groups. The interaction between vaccine type and age group was also not significant, meaning both vaccines worked about the same across all ages.
+
+These results suggest that both vaccines are equally effective in triggering an immune response, whether given to younger or older people. This is a positive finding because it shows that both vaccines can be used confidently in different age groups without worrying about one being more effective than the other.
+
+Even though no significant differences were found, this doesn’t completely rule out the possibility of small or biological differences. Factors like sample size, natural variation, or other immune markers might have influenced the results. Future research with more participants and longer observation periods could help confirm these findings. Overall, the results suggest that both vaccines performed similarly and provided consistent immune protection across different age groups.
+
+- **Did the interaction between vaccine type and age group affect the antibody titer?**
+
+Ans: No, the interaction between Vaccine Type and Age Group did not significantly affect antibody titers.
+
+Explanation:
+The p-value (0.561) is greater than 0.05, indicating that the interaction effect is not statistically significant.
+This means that the effect of vaccine type on antibody levels is consistent across both age groups.
+In other words, the difference (if any) between Vaccine A and Vaccine B is similar for both young and elderly participants.Thus, age group does not modify the relationship between vaccine type and immune response.
+Both vaccines performed comparably across age groups, suggesting that the interaction effect is not significant in influencing antibody titers.
+
+- **Discuss how your findings might inform real-world vaccination strategies.**
+
+Ans: The results of this study show that both vaccines worked about the same in producing antibody responses, and this was true for both young and older participants. In real-world vaccination programs, this means that either vaccine can be safely and effectively used for people of different ages. Health officials and healthcare workers can therefore make decisions based on availability, cost, and storage conditions, rather than worrying about one vaccine being better for a certain age group.
+
+Because both vaccines performed similarly, it also supports the idea of using whichever vaccine is more accessible in a community, which can help speed up vaccination campaigns and improve overall coverage. It’s encouraging that older adults responded just as well as younger people, since this age group is often more at risk from infections. Still, more research with larger samples or different populations would help confirm these results. Overall, these findings suggest that both vaccines are reliable options and can be used interchangeably to protect people of all ages.
+
