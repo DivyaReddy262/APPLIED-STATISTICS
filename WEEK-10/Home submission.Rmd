@@ -1,0 +1,255 @@
+---
+title: "Week-10 Home submission"
+author: "Divya Reddy"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+- Among the three group datasets, the Heart Attack Prediction Dataset offers the greatest number of categorical variables suitable for a Chi-Square Test of Independence.
+
+- While the COVID-19 datasets are dominated by continuous variables (e.g., case counts, hospitalizations) with limited categorical fields, the Heart Attack dataset includes several balanced categorical variables such as Sex, Smoking, Obesity, Diabetes, and Heart Attack Risk.
+
+- These variables are binary or nominal, balanced across categories, and directly related to each other conceptually enabling valid and meaningful Chi-Square analyses.
+
+- Therefore, based on data composition and suitability for categorical association testing, the Heart Attack Prediction Dataset was objectively selected as the most appropriate choice for this assignment.
+
+- Dataset Source: Banerjee, S. (2021). Heart Attack Prediction Dataset. Kaggle. https://www.kaggle.com/datasets/iamsouravbanerjee/heart-attack-prediction-dataset.
+
+# 1.Select and Explore Categorical Variables
+
+**Dataset Overview:**
+
+- The Heart Attack Prediction Dataset (Banerjee, 2021) contains 8,763 patient records with demographic, lifestyle, and clinical variables related to cardiovascular health.
+
+- The dataset includes both categorical variables (e.g Sex, Smoking, Diabetes, Obesity, Heart Attack Risk) and continuous variables (e.g Age, BMI, Cholesterol).
+
+- It is suitable for examining associations between lifestyle factors and heart-attack risk.
+
+- Source: https://www.kaggle.com/datasets/iamsouravbanerjee/heart-attack-prediction-dataset
+
+- Observations: 8,763
+
+- Variables: 26
+
+```{r}
+# Load data
+heart <- read.csv("heart_attack_prediction_dataset.csv")
+
+# View structure of dataset
+str(heart)
+```
+
+The selected categorical variables for this assignment are:
+
+- Smoking
+
+- Heart.Attack.Risk
+
+These appear in the dataset as integer (0/1) values, which means they represent binary categories.
+
+**Variable 1: Smoking**
+
+The Smoking variable indicates whether a patient is a current smoker.
+It is coded as:
+
+0 = Non-Smoker
+
+1 = Smoker
+
+Smoking is a major preventable risk factor for cardiovascular disease.
+Examining this variable helps determine whether smoking behavior is statistically associated with an increased risk of heart attack.
+```{r}
+unique(heart$Smoking)
+
+# Frequency table
+table(heart$Smoking)
+prop.table(table(heart$Smoking))
+
+# Visualization
+bp <- barplot(table(heart$Smoking),
+              main="Distribution of Smoking Status",
+              col=c("skyblue","red"),
+              names.arg=c("Non-Smoker","Smoker"),
+              ylim=c(0, max(table(heart$Smoking)) + 1000))
+
+text(bp, table(heart$Smoking),
+     labels = paste0(round(prop.table(table(heart$Smoking)) * 100, 1), "%"),
+     pos = 3)
+
+```
+
+**Variable 2: Heart.Attack.Risk**
+
+The Heart.Attack.Risk variable indicates whether a patient has been classified as being at risk for a heart attack.
+
+It is coded as:
+
+0 = Not at Risk
+
+1 = At Risk
+
+This is the primary outcome variable in the dataset.
+Understanding its relationship with lifestyle factors (such as smoking) is essential for determining risk patterns and is perfectly suited for a Chi-Square Test of Independence.
+
+```{r}
+unique(heart$Heart.Attack.Risk)
+
+# Frequency table
+table(heart$Heart.Attack.Risk)
+prop.table(table(heart$Heart.Attack.Risk))
+
+# Visualization
+bp <- barplot(table(heart$Heart.Attack.Risk),
+              main = "Heart Attack Risk Distribution",
+              col = c("lightgreen","orange"),
+              names.arg = c("No Risk","At Risk"),
+              ylim = c(0, max(table(heart$Heart.Attack.Risk)) + 1000))
+text(bp,
+     table(heart$Heart.Attack.Risk),
+     labels = paste0(round(prop.table(table(heart$Heart.Attack.Risk))*100,1), "%"),
+     pos = 3)
+
+```
+
+Both variables:
+
+- Are truly categorical (binary 0/1 indicators)
+
+- Have sufficient counts in both categories
+
+- Are clinically meaningful
+
+- Allow a valid Chi-Square analysis
+
+This satisfies the assignment requirement to select two categorical variables with two or more levels, and to justify their relevance.
+
+**Research question:** Is there a statistically significant relationship between smoking and heart attack risk among the participants?
+
+# 2.Perform a Chi-Square Test
+- Null Hypothesis (H0):
+
+There is no statistically significant relationship between smoking and heart attack risk among the participants.
+
+- Alternative Hypothesis (H1):
+
+There is a statistically significant relationship between smoking and heart attack risk among the participants.
+
+```{r}
+heart$Smoking <- as.factor(heart$Smoking)
+heart$Heart.Attack.Risk <- as.factor(heart$Heart.Attack.Risk)
+
+# Construct contingency table
+contingency_table <- table(heart$Smoking, heart$Heart.Attack.Risk)
+
+# Display the table
+contingency_table
+
+# Interpretation: The contingency table shows the joint distribution of smoking status and heart attack risk. Among 904 non-smokers, 575 were classified as “No Risk” and 329 as “At Risk.” Among 7,859 smokers, 5,049 were “No Risk” and 2,810 were “At Risk.” Although the dataset contains more smokers than non-smokers, both categories include sufficient counts for a valid Chi-Square Test of Independence.
+```
+
+**Verify Assumptions:**
+
+- 1. Independence of Observations:
+
+Each participant appears only once in the dataset, and Smoking status and Heart Attack Risk are measured independently for each person.This assumption is satisfied.
+
+- 2. Mutually Exclusive Categories:
+
+Each individual belongs to only one category of Smoking (0 or 1) and only one category of Heart Attack Risk (0 or 1).
+
+- 3. Minimum Expected Cell Frequency of 5:
+
+To verify this assumption, we calculate the expected counts:
+```{r}
+chisq.test(contingency_table)$expected
+
+# The expected frequencies for all cells were above the minimum requirement of 5 (ranging from 323.82 to 5043.82). Therefore, the assumption regarding expected cell counts is met, and the chi-square test can be validly performed on this dataset.
+```
+
+All expected values are far greater than 5.No cell violates the minimum expected frequency rule.This assumption is fully satisfied.
+
+# Chi-square test
+```{r}
+contingency_table <- table(heart$Smoking, heart$Heart.Attack.Risk)
+
+chisq_out <- chisq.test(contingency_table)
+
+chisq_out$statistic    
+chisq_out$parameter    
+chisq_out$p.value      
+chisq_out$observed     
+chisq_out$expected  
+
+# Interpretation:
+# The chi-square value was very small.
+# The p-value was high (p = 0.73 > 0.05).
+# Therefore, we fail to reject the null hypothesis.
+# There is no significant association between smoking and heart attack risk.
+# Observed and expected counts were almost identical, supporting independence.
+```
+
+# Interpretation and Discussion
+
+**Statistical Decision**
+
+- The chi-square test produced a p-value of 0.73, which is greater than the significance level α = 0.05.
+
+- Therefore, we fail to reject the null hypothesis (H₀).
+
+- This means there is no statistically significant relationship between smoking status and heart attack risk in this dataset.
+
+**Interpretation of results**
+
+- The chi-square test showed no significant association between smoking and heart attack risk (p = 0.73).
+
+- Both smokers and non-smokers had similar proportions of individuals classified as “At Risk.”
+
+- Observed and expected frequencies were almost identical, indicating that smoking status does not influence risk classification in this dataset.
+
+- This suggests that other factors (such as age, cholesterol, blood pressure, diabetes, BMI) may have a stronger impact on heart attack risk than smoking alone.
+
+- In this dataset, smoking is not a meaningful predictor when analyzed independently.
+
+**Reflection**
+
+- The results highlight that single-variable analysis can sometimes fail to capture complex medical relationships.
+
+- Although smoking is a known cardiovascular risk factor, it did not show a significant link here, reminding us that dataset context matters.
+
+- Heart attack risk assessments often require multiple indicators, not just lifestyle behaviors.
+
+- This outcome demonstrates the importance of data-driven analysis rather than relying solely on assumptions or prior beliefs.
+
+- The study underscores that statistical findings must be interpreted cautiously, especially in health-related research.
+
+**Limitations**
+
+- Imbalanced categories: The dataset has far more smokers than non-smokers, which may reduce sensitivity to detect differences.
+
+- Binary simplification: Heart attack risk is coded only as “No Risk” or “At Risk,” which may oversimplify a complex medical condition.
+
+- Unknown risk calculation method: The dataset does not explain how risk was determined, limiting interpretability.
+
+- No control of confounding variables: Other known heart attack predictors (age, cholesterol, BP, diabetes) were not included in the chi-square test.
+
+- Dataset-specific findings: Results may not generalize to real populations due to sampling differences and limited variable detail.
+
+# References
+
+1.Dataset Source (Kaggle Dataset)
+
+Banerjee, S. (2021). Heart Attack Prediction Dataset [Data set]. Kaggle. https://www.kaggle.com/datasets/iamsouravbanerjee/heart-attack-prediction-dataset
+
+2. Chi-Square Test Theory
+
+McHugh, M. L. (2013). The chi-square test of independence. Biochemia Medica, 23(2), 143-149. https://doi.org/10.11613/BM.2013.018
+
+3. Heart Attack Risk Factors
+
+Benjamin, E. J., Muntner, P., & Alonso, A. (2019). Heart disease and stroke statistics 2019 update. Circulation, 139(10), e56–e528. https://doi.org/10.1161/CIR.0000000000000659
