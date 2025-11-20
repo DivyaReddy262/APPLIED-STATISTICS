@@ -1,0 +1,281 @@
+---
+title: "Home Submission(week-11)"
+author: "Divya Reddy"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+yrbss <- read.csv("yrbss.csv")
+nrow(yrbss)
+
+
+dim(yrbss)      # number of rows and columns
+head(yrbss)     # first few rows
+names(yrbss)    # list of variable names
+
+```
+
+## Part 1: Exploring and Cleaning the Data
+```{r}
+yrbss <- read.csv("yrbss.csv")
+
+str(yrbss)
+summary(yrbss)
+
+# Check missing values in key columns
+colSums(is.na(yrbss[, c("grade", "helmet_12m", "physically_active_7d", "weight")]))
+
+# Remove rows with missing data in key variables
+yrbss_clean <- yrbss[complete.cases(yrbss[, c("grade", "helmet_12m", "physically_active_7d", "weight")]), ]
+
+# Check new dataset size
+nrow(yrbss_clean)
+
+
+# Interpretation: The original YRBSS dataset contained 13,583 observations. After removing rows with missing values in key variables (grade, helmet_12m, physically_active_7d, and weight), 1,398 incomplete rows were removed, leaving 12,185 complete cases. Most missing data were found in the weight variable, followed by helmet_12m and physically_active_7d. The cleaned dataset now contains only complete responses, suitable for reliable analysis.
+
+```
+
+## Part 2: Is Helmet Usage Independent of Grade?
+
+```{r}
+unique(yrbss_clean$helmet_12m)
+unique(yrbss_clean$grade)
+
+# Remove irrelevant categories
+yrbss_clean2 <- subset(
+  yrbss_clean,
+  helmet_12m != "did not ride" & grade != "other"
+)
+
+# Check new unique values
+unique(yrbss_clean2$helmet_12m)
+unique(yrbss_clean2$grade)
+
+# Check new number of rows
+nrow(yrbss_clean2)
+
+# Frequency table 
+helmet_grade_table <- table(yrbss_clean2$grade, yrbss_clean2$helmet_12m)
+helmet_grade_table
+
+# Grouped bar plot 
+barplot(
+  helmet_grade_table,
+  beside = TRUE,                            
+  col = c("skyblue", "lavender", "lightpink", "orange"), 
+  legend.text = TRUE,
+  args.legend = list(title = "Grade", x = "topright"),
+  main = "Helmet Usage by Grade",
+  xlab = "Helmet Usage Frequency",
+  ylab = "Number of Students"
+)
+
+
+# Interpretation: The bar plot indicates that helmet usage differs across grades. While most students in all grades reported never wearing a helmet, 9th graders show higher counts in every helmet-use category, suggesting they are generally more active riders. The variation in bar heights across grades suggests a possible association between grade level and helmet usage, meaning helmet-wearing behavior may not be uniform across grades.
+
+```
+
+Research questions
+
+**“Do students in different grades show different patterns of helmet use while riding a bicycle?” **
+
+From the bar plot it indicates that helmet usage differs across grades. While most students in all grades reported never wearing a helmet, 9th graders show higher counts in every helmet-use category, suggesting they are generally more active riders. The variation in bar heights across grades suggests a possible association between grade level and helmet usage, meaning helmet-wearing behavior may not be uniform across grades.
+
+**State the hypotheses for the statistical test you will conduct.**
+
+Hypotheses for the Chi-Square Test of Independence:
+
+- Null Hypothesis (H₀): Helmet usage is independent of grade level.
+
+- Alternative Hypothesis (H₁): Helmet usage is dependent on grade level.
+
+**Check the assumptions for the test. Proceed with the test only after confirming that the assumptions are met.**
+
+- Variables are Categorical: grade --> categorical ;helmet_12m --> categorical
+
+- Observations are Independent: Each student’s response comes from a different individual.
+
+```{r}
+# Create contingency table
+helmet_grade_table <- table(yrbss_clean2$grade, yrbss_clean2$helmet_12m)
+
+# Run chi-square test
+chisq_test <- chisq.test(helmet_grade_table)
+
+# View expected counts
+chisq_test$expected
+
+```
+
+Since all expected cell counts are greater than 5, the assumption for the Chi-square test is satisfied.Combined with both variables being categorical and the observations being independent, all assumptions for the Chi-square test of independence are met.
+
+**After running the test, report the test statistic, degrees of freedom, and p-value.**
+
+```{r}
+chisq_test
+```
+
+- The p-value (0.0266) is less than 0.05, which means the result is statistically significant. Therefore, we reject the null hypothesis (H₀).
+
+- This indicates that helmet usage and grade level are not independent there is a significant association between the two variables.
+
+- This suggests that helmet-wearing behavior differs across grades, indicating that age or school level may play a role in bicycle safety practices.
+
+**Provide a detailed interpretation of the results in real-life terms.**
+
+The results show that helmet-wearing behavior differs by grade level. In real life, this means that younger students, such as 9th graders, are more likely to wear helmets compared to older students in higher grades. As students get older, consistent helmet use tends to decrease, possibly due to greater independence, peer influence, or risk-taking attitudes. This pattern suggests that age and grade level influence safety habits, highlighting the need for continued education on helmet safety, especially among older high school students.
+
+**Explain what the findings suggest about helmet-wearing behavior across different grade levels and discuss the practical implications for safety or behavior patterns.**
+
+The findings show that helmet use declines with grade level younger students wear helmets more often, while older students are less consistent. This suggests a need for targeted safety education for higher grades to encourage regular helmet use and reduce injury risk.
+
+## Part 3: Do Grades Differ in Physical Activity?
+
+```{r}
+# Keep only rows where grade is 9, 10, 11, or 12
+yrbss_pa <- subset(yrbss_clean2, grade %in% c("9", "10", "11", "12"))
+
+unique(yrbss_pa$grade)
+
+
+# Boxplot of physical activity by grade
+boxplot(
+  physically_active_7d ~ grade,
+  data = yrbss_pa,
+  col = c("maroon", "lightblue", "pink", "lavender"),
+  main = "Physical Activity (Days per Week) by Grade",
+  xlab = "Grade",
+  ylab = "Days Physically Active (per week, ≥60 min)"
+)
+
+# Interpretation: The boxplot shows that the distribution of physically active days is fairly similar across all grades, though there are slight differences in medians. 9th and 10th graders tend to have a slightly higher median number of active days per week compared to 11th and 12th graders, suggesting a small decline in activity as grade level increases. Overall, the visualization suggests that grade level may be modestly associated with physical activity, with younger students appearing to be more active on average than older students.
+
+```
+
+**“Do students in different grades differ in the number of days they are physically active each week?”**
+
+Based on the boxplot analysis, students in different grades show slightly different levels of physical activity per week. 9th and 10th graders tend to be more physically active, with higher median active days, while 11th and 12th graders report being active on fewer days. This suggests that as students move to higher grades, their weekly physical activity may gradually decrease, possibly due to increased academic demands or lifestyle changes.
+
+**State the hypotheses for the statistical test you will conduct.**
+
+Hypotheses for the Statistical Test (ANOVA):
+
+- Null Hypothesis (H₀): The mean number of physically active days per week is the same across all grade levels.
+
+- Alternative Hypothesis (H₁): The mean number of physically active days per week is not the same across all grade levels.
+
+**Check the assumptions for the test. Proceed with the test only after confirming that the assumptions are reasonably met.**
+
+- The dependent variable is continuous
+
+- The independent variable is categorical
+
+- Independence of observations: Each student’s response is from a different person
+
+```{r}
+# Shapiro-Wilk test for normality by grade
+by(yrbss_pa$physically_active_7d, yrbss_pa$grade, shapiro.test)
+
+# Test for equal variances
+bartlett.test(physically_active_7d ~ grade, data = yrbss_pa)
+
+# All assumptions are reasonably met: Data are numeric (continuous).Groups are categorical and independent. Variances are equal (p > 0.05). Normality is acceptable given large sample size.
+```
+
+**After running the test, report the results, including the test statistic, degrees of freedom, and p-value.**
+
+```{r}
+# Run one-way ANOVA
+anova_result <- aov(physically_active_7d ~ grade, data = yrbss_pa)
+
+summary(anova_result)
+
+# Interpretation: The ANOVA results show a significant difference in physical activity across grades. This means students in different grades do not have the same average number of active days per week — grade level significantly affects physical activity.
+```
+
+**Provide a detailed interpretation of the findings in real-life terms.**
+
+The results show that physical activity levels differ by grade. As students progress through high school, the number of active days per week tends to decrease. 9th and 10th graders are generally more active than 11th and 12th graders. This may be due to academic pressure or lifestyle changes. Promoting regular exercise among older students can help maintain healthy activity habits.
+
+**Explain what the results suggest about differences in physical activity levels across grade levels and discuss what these patterns might imply about student behavior, physical education engagement, or developmental trends.**
+
+The results suggest that physical activity decreases slightly as students move to higher grades. Younger students (grades 9–10) are generally more active, while older students (grades 11–12) show lower activity levels. This pattern may indicate that older students face greater academic demands or reduced participation in physical education and sports. It could also reflect developmental or behavioral changes, such as shifting interests or time constraints. These trends highlight the need to promote continued engagement in physical activity throughout high school to support students’ health and well-being.
+
+## Part 4: What Is the Relationship Between Physical Activity and Weight?
+```{r}
+yrbss_pa_weight <- yrbss[, c("physically_active_7d", "weight")]
+
+yrbss_pa_weight <- na.omit(yrbss_pa_weight)
+
+str(yrbss_pa_weight)
+summary(yrbss_pa_weight)
+
+# Scatter plot of physical activity vs. weight
+plot(
+  yrbss_pa_weight$physically_active_7d,
+  yrbss_pa_weight$weight,
+  main = "Relationship Between Physical Activity and Weight",
+  xlab = "Days Physically Active per Week (≥60 min)",
+  ylab = "Weight (kg)",
+  col = "steelblue",
+)
+
+# Add a trend line
+abline(lm(weight ~ physically_active_7d, data = yrbss_pa_weight), col = "red", lwd = 2)
+
+# Interpretation: The scatterplot with a fitted regression line shows a very weak negative relationship between physical activity and weight. As the number of physically active days per week increases, weight appears to decrease slightly, but the trend is not strong or consistent. The points are widely scattered around the line, suggesting little to no meaningful association between students’ physical activity levels and their body weight. Overall, being more active does not appear to be strongly linked to lower weight among students in this dataset.
+
+```
+
+**“Is there a linear relationship between the number of days students are physically active and their weight?”**
+
+Based on the scatterplot analysis, there appears to be little to no linear relationship between the number of days students are physically active and their weight. The regression line is nearly flat, and the data points are widely scattered, suggesting that increased physical activity is not strongly associated with lower or higher body weight among students in this dataset.
+
+**Fit the simple regression model:**
+
+```{r}
+# Fit simple linear regression model
+model_pa_weight <- lm(weight ~ physically_active_7d, data = yrbss_pa_weight)
+
+# View summary of the model
+summary(model_pa_weight)
+
+```
+
+**Report the findings from the regression output, including:**
+
+- The slope estimate (0.318) indicates that for each additional day a student is physically active per week, their weight increases by about 0.32 kg on average. Although the p-value shows this relationship is statistically significant, the Rsquare value (0.0023) is extremely low, meaning physical activity explains less than 1% of the variation in weight.
+
+- Therefore, while statistically significant, the model does not demonstrate a good overall fit and the relationship is not practically meaningful.
+
+**If the model is a poor fit (for example, if the R-squared value is very low), provide an interpretation explaining why this may be the case.**
+
+The model’s poor fit (Rsquare = 0.0023) suggests that physical activity alone is not a strong predictor of weight among students. This is likely because body weight is influenced by many other factors such as diet, genetics, metabolism, lifestyle, and growth stage which are not captured in this simple model. Additionally, self-reported physical activity may not accurately reflect true exercise intensity or duration, further weakening the relationship. In short, the low R² indicates that weight variation is largely explained by factors other than just the number of active days per week.
+
+**Consider real-life factors such as diet, genetics, lifestyle, measurement issues, and the complexity of weight as an outcome.**
+
+- The low R² shows that weight is influenced by many factors beyond physical activity.
+
+- Diet, genetics, and lifestyle habits have stronger effects on body weight.
+
+- Self-reported activity and weight data may also reduce accuracy.
+
+- Overall, weight is a complex outcome, so a simple model cannot explain it well.
+
+**Provide a detailed interpretation of the results in real-life terms.**
+
+The results show a very weak positive relationship between physical activity and weight. As students engage in more active days per week, their weight slightly increases on average. This suggests that being more active does not strongly predict lower body weight. In real life, students’ weight is influenced by many factors such as diet, genetics, and metabolism, not just activity level.
+
+**Explain what the findings suggest about the relationship between physical activity and weight among students, and discuss the practical implications of a strong or weak association.**
+
+- The findings suggest that physical activity has little impact on students’ weight. Even though the relationship is statistically significant, it is not strong enough to indicate a meaningful effect. This implies that being physically active alone does not determine a student’s body weight.
+
+- Because the association is weak, focusing only on increasing physical activity may not lead to major weight changes. Effective weight management among students should also include healthy eating habits, lifestyle choices, and education on balanced living. The results reinforce that a holistic approach is necessary to promote overall health, not just physical activity alone.
