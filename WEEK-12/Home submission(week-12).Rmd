@@ -1,0 +1,162 @@
+---
+title: "Home submission (Week-12)"
+author: "Divya Reddy"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Part-1 Data Exploration
+
+```{r}
+heart <- read.csv("heart_attack_prediction_dataset.csv")
+head(heart)
+
+str(heart)
+summary(heart)
+```
+
+I chose the Heart Attack Prediction dataset because, unlike the other two datasets selected by my group, it is structured in a way that is appropriate for multiple regression analysis. The COVID-19 datasets were mainly time-series based, contained daily or cumulative counts, and required advanced preprocessing, which made them unsuitable for the type of independent, continuous predictors needed for this assignment. In contrast, the Heart Attack dataset provides clean individual-level observations with many continuous variables such as age, cholesterol, BMI, income, triglycerides, sleep hours, and sedentary hours that can be directly used in a regression model. This dataset is easy to load, properly formatted, and offers a clear real-world health context, making it the most suitable choice among the three for conducting multiple regression and interpreting the results effectively.
+
+```{r}
+# Count total missing values
+sum(is.na(heart))
+
+# Check missing values column-wise
+colSums(is.na(heart))
+
+# The dataset was checked for missing values using both total and column-wise summaries in R. The results showed that there were no missing values in any of the 26 variables. Since the dataset is fully complete, no imputation or data cleaning was required at this stage. The dataset is ready to be used directly for multiple regression analysis without any modifications related to missing data.
+```
+
+**Variable selection:**
+
+- Dependent Variable:
+
+ Heart.Attack.Risk
+
+Reason: This variable represents whether an individual is at risk of a heart attack (0 = No risk, 1 = Risk). It is the main outcome the dataset is designed to study.
+
+- Independent Variable:
+
+- Age
+
+Reason: Age is one of the strongest predictors of heart disease because cardiovascular risk increases significantly as people get older.
+
+- Cholesterol
+
+Reason: High cholesterol contributes to plaque buildup in arteries and is medically recognized as a major risk factor for heart attacks.
+
+These two predictors are clinically relevant and strongly associated with heart attack risk, making them appropriate for a regression model.
+
+**Descriptive statistics**
+
+```{r}
+# Select variables
+vars <- heart[, c("Heart.Attack.Risk", "Age", "Cholesterol")]
+
+# Calculate summary statistics
+summary(vars)
+
+# Calculate standard deviation
+sapply(vars, sd)
+
+
+# Interpretation: The dependent variable Heart.Attack.Risk ranges from 0 to 1, with a mean of 0.358, indicating that around 36% of the individuals in the dataset are at risk of a heart attack. Age ranges from 18 to 90 years, with a mean of 53.71 and a median of 54, showing that the sample includes both younger and older adults. Cholesterol values range from 120 to 400 mg/dL, with a mean of 259.9 and a median of 259, which suggests that many individuals have moderately high cholesterol levels. The standard deviations for Age (21.25) and Cholesterol (80.86) indicate substantial variability across the sample. These descriptive statistics confirm that the variables show enough variation to be suitable for regression analysis.
+```
+
+## Part 2: Model building
+
+**Correlation Analysis:**
+
+```{r}
+
+indep_vars <- heart[, c("Age", "Cholesterol")]
+
+# Correlation matrix
+cor_matrix <- cor(indep_vars)
+cor_matrix
+
+# Interpretation: A correlation analysis was conducted on the two independent variables, Age and Cholesterol, to check for multicollinearity before building the regression model. The correlation coefficient between Age and Cholesterol was approximately –0.009, which is extremely close to zero. Since this value is far below the multicollinearity threshold of 0.7, there is no evidence of a strong linear relationship between the predictors. Therefore, multicollinearity is not a concern, and both variables can be safely included in the regression model.
+```
+
+**Fit a Multiple Regression Model:**
+
+```{r}
+# Fit the multiple regression model
+model <- lm(Heart.Attack.Risk ~ Age + Cholesterol, data = heart)
+
+# View model summary
+summary(model)
+
+```
+
+**Interpret the Coefficients:**
+
+- Age:
+
+The coefficient for Age is 0.000148, which means that for every additional year of age, the predicted heart attack risk increases by only 0.000148 units, holding cholesterol constant. This effect is extremely small and not statistically significant.
+
+- Cholesterol:
+
+The coefficient for Cholesterol is 0.000115, meaning that for every 1 mg/dL increase in cholesterol, the predicted heart attack risk increases by 0.000115 units, holding age constant. This effect is also very small and only marginally close to significance.
+
+- Intercept:
+
+The intercept of 0.3203 represents the baseline predicted heart attack risk when both age and cholesterol are zero, but this value mainly serves as a mathematical starting point and has no practical meaning since age and cholesterol cannot realistically be zero.
+
+## Part 3: Model evaluation
+
+**Model fit**
+
+The model produced an R-squared value of 0.000417 and an Adjusted R-squared value of 0.000189. These values are extremely close to zero, meaning the model explains almost none of the variation in heart attack risk. This indicates a very poor fit, as Age and Cholesterol do not meaningfully predict the outcome in this dataset. Because both R-squared measures are essentially zero, the model does not provide useful predictive power and does not capture the factors that influence heart attack risk.
+
+**Statistical Significance:**
+
+The p-values for the predictors were examined at the 0.05 significance level. Age had a p-value of 0.5379, and Cholesterol had a p-value of 0.0694. Since both p-values are greater than 0.05, neither Age nor Cholesterol is statistically significant in predicting Heart.Attack.Risk. This means that, based on this dataset, there is no strong evidence that changes in age or cholesterol levels are associated with changes in heart attack risk when included in this simple multiple regression model.
+
+**Generate Diagnostic Plots:**
+
+```{r}
+# Regression model
+model <- lm(Heart.Attack.Risk ~ Age + Cholesterol, data = heart)
+
+# Diagnostic plots
+par(mfrow = c(2,2))
+plot(model)
+
+```
+
+- Linear Relationship:
+
+The Residuals vs Fitted plot shows the residuals clustered at only two values (0 and −0.35), forming a flat pattern rather than a smooth curve. This indicates that the linearity assumption is not satisfied because the dependent variable is binary and cannot form a linear relationship with the predictors.
+
+- Errors Normally Distributed:
+
+The Q-Q plot shows strong deviations from the diagonal line, especially at the tails. The residuals are not normally distributed, again due to the binary nature of the response variable. This violates the normality assumption of linear regression.
+
+- Homoscedasticity:
+
+The Scale-Location plot shows uneven spread of the residuals, forming horizontal bands. This indicates heteroscedasticity, meaning the variance of errors is not constant across fitted values. This also violates a key assumption.
+
+- Multicollinearity:
+
+There is no issue with multicollinearity. Earlier correlation analysis showed Age and Cholesterol had a correlation of only –0.009, far below the 0.7 threshold.
+
+- Outliers:
+
+The Residuals vs Leverage plot shows no extreme leverage points or Cook’s distance values. While the residuals cluster due to the binary outcome, there are no influential outliers that would threaten model stability.
+
+## Part 4: Report findings
+
+**Summary of Results:**
+
+The regression model found very weak positive relationships between Age, Cholesterol, and Heart.Attack.Risk, but neither predictor was statistically significant. The R-squared value was close to zero, indicating almost no explanatory power. Diagnostic checks showed violations of linear regression assumptions due to the binary outcome, though no multicollinearity or major outliers were present.
+
+**Conclusion:**
+
+The analysis shows that Age and Cholesterol do not meaningfully predict heart attack risk in this dataset. Because the dependent variable is binary, linear regression is not an appropriate modeling method. A logistic regression model with additional health-related predictors would likely provide more accurate and meaningful results.
