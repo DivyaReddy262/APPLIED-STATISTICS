@@ -1,0 +1,165 @@
+---
+title: "home submission(week-13)"
+author: "Divya Reddy"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load and Inspect the Data
+```{r}
+# Load dataset
+smoking <- read.csv("smoking.csv")
+
+str(smoking)
+head(smoking)
+summary(smoking)
+
+# Check for missing values 
+colSums(is.na(smoking))
+
+# Total number of missing values in the dataset
+sum(is.na(smoking))
+
+```
+
+# Data Cleaning
+```{r}
+
+smoking$smoke <- factor(smoking$smoke, levels = c("No", "Yes"))
+
+table(smoking$smoke)
+str(smoking$smoke)
+
+```
+
+```{r}
+# Convert empty strings to missing values
+
+smoking[smoking == ""] <- NA
+colSums(is.na(smoking))
+
+sum(is.na(smoking))
+
+```
+
+# Convert Categorical Predictors to Factors
+```{r}
+# Convert predictors to factors
+smoking$gender <- factor(smoking$gender)
+smoking$gross_income <- factor(smoking$gross_income)
+smoking$marital_status <- factor(smoking$marital_status)
+
+str(smoking)
+
+levels(smoking$gender)
+levels(smoking$gross_income)
+levels(smoking$marital_status)
+
+```
+
+# Exploratory Data Analysis
+```{r}
+# Histogram of age distribution
+
+library(ggplot2)
+
+ggplot(smoking, aes(x = age)) +
+  geom_histogram(binwidth = 5, fill = "steelblue", color = "black") +
+  labs(title = "Age Distribution of Participants",
+       x = "Age",
+       y = "Count")
+
+# Interpretation: The age distribution ranges from around 15 to 95, with most participants between 30 and 60 years old. Younger (<25) and older (>75) individuals are less common. Overall, the sample is dominated by middle-aged adults.
+
+```
+
+```{r}
+
+# bar chart showing the overall proportion of smokers versus non-smokers
+
+ggplot(smoking, aes(x = smoke)) +
+  geom_bar(aes(y = after_stat(prop), group = 1), fill = "orange") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Proportion of Smokers vs Non-Smokers",
+       x = "Smoking Status",
+       y = "Percentage") 
+
+# Interpretation: The chart shows that the majority of participants are non-smokers, making up about 70-75% of the sample. Smokers represent a much smaller proportion, around 25-30%. Overall, non-smoking is clearly more common in this dataset.
+
+```
+
+```{r}
+#  bar chart comparing smoking status across gender categories
+
+ggplot(smoking, aes(x = gender, fill = smoke)) +
+  geom_bar(position = "dodge") +
+  labs(title = "Smoking Status Across Gender",
+       x = "Gender",
+       y = "Count",
+       fill = "Smoking Status") 
+
+# Interpretation: Non-smokers are the majority in both genders, but the number of smokers is noticeably higher among females than males in this sample. Overall, females have more participants and slightly more smokers compared with males.
+
+```
+
+```{r}
+# bar chart comparing smoking status across marital status or gross income groups
+
+ggplot(smoking, aes(x = marital_status, fill = smoke)) +
+  geom_bar(position = "dodge") +
+  labs(title = "Smoking Status Across Marital Status",
+       x = "Marital Status",
+       y = "Count",
+       fill = "Smoking Status") 
+
+# Interpretation: Non-smokers are the majority across all marital groups, with married individuals forming the largest group overall. Single individuals show a comparatively higher number of smokers, while separated and widowed groups have fewer participants but similar patterns of more non-smokers than smokers.
+
+```
+
+# Logistic Regression Model and Model Improvement
+```{r}
+model1 <- glm(smoke ~ age + gender + gross_income + marital_status,
+              data = smoking,
+              family = binomial)
+
+summary(model1)
+
+# Interpretation: Age, gender, income, and marital status all influence smoking status. Younger people and males are more likely to smoke, while higher-income groups show lower odds of smoking than the reference group. Married and single individuals also have lower odds of smoking compared with divorced individuals. Overall, being younger, male, lower-income, or divorced is associated with a higher likelihood of smoking.
+```
+
+**Removing Predictors That Are Clearly Non-Significant:**
+
+Several predictors in the initial model showed no statistically significant association with smoking status (p > 0.05), including some income categories (e.g. 2600 to 5200, 5200 to 10,400, under 2600, unknown) and marital groups such as “Separated” and “Widowed”. These estimates had z-values close to zero, indicating little contribution to the model, and their large standard errors suggest instability. Removing these non-significant categories simplifies the model without meaningfully changing the significant relationships already identified. This improves interpretability while maintaining the model’s explanatory power.
+
+**Combining Sparse Factor Levels:**
+
+Several categorical predictors contain levels with very few observations, particularly within the gross income and marital status variables. These sparse categories can produce unstable coefficient estimates, large standard errors, and potential convergence issues in logistic regression. To improve model stability and interpretability, low-frequency levels may be combined into broader, logically consistent groups. This reduces sparsity while preserving the substantive meaning of the variables, ensuring that the model is both statistically sound and easier to interpret.
+
+**Using Only Complete Cases Versus Limited Imputation:**
+
+Because the dataset contains missing values, a decision must be made about how to handle them. Using complete cases only ensures that the logistic regression model is fitted on fully observed data, but this approach reduces the sample size and may introduce bias if the missingness is not completely random. As an alternative, simple and justified imputation can be applied for example, replacing missing ages with the median age or creating an additional “Unknown” level for categorical predictors like income. These minimal imputation strategies preserve more data while remaining appropriate for logistic regression, without requiring complex or advanced imputation methods.
+
+# Odds Ratios and Percentage Change in Odds
+
+```{r}
+# Odds ratios
+OR <- exp(coef(model1))
+OR
+exp(confint(model1))
+
+# Percentage change in odds
+percent_change <- (exp(coef(model1)) - 1) * 100
+percent_change
+
+
+# Interpretation: Younger adults are less likely to smoke, with each additional year of age reducing smoking odds by about 3% (OR = 0.97). Males have 35% higher odds of smoking than females (OR = 1.35). Income has a strong protective effect: compared with the lowest-income group, those earning 20,800-28,600 have 25% lower odds (OR = 0.75), those earning 28,600-36,400 have 71% lower odds (OR = 0.29), and those earning above 36,400 have 52% lower odds (OR = 0.48). Married individuals show 63% lower odds of smoking (OR = 0.37), and single individuals have 40% lower odds (OR = 0.60) compared with divorced individuals. Overall, smoking is most associated with being younger, male, lower-income, and divorced.
+
+```
+
